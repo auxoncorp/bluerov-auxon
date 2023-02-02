@@ -48,6 +48,8 @@ if [ -z "$CONTAINER_ID" ]; then
         $DOCKER_OPTS \
         --env DISPLAY=$DISPLAY \
         --env XAUTHORITY="$XAUTH" \
+        --env MODALITY_AUTH_TOKEN \
+        --env MODALITY_REFLECTOR_CONFIG="/reflector-config.toml" \
         --volume=/tmp/.X11-unix:/tmp/.X11-unix:ro \
         --volume="$XAUTH:$XAUTH" \
         $CONTAINER_IMAGE \

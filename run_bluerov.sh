@@ -9,7 +9,7 @@ if ! docker network inspect "$DOCKER_NETWORK" &>/dev/null ; then
     exit 1
 fi
 
-CONTAINER_IMAGE=${1:-rezenders/ros-hackathon-humble}
+CONTAINER_IMAGE=${1:-bluerov}
 CONTAINER_ID=$(docker ps -aqf "ancestor=${CONTAINER_IMAGE}")
 
 echo "In the console, run this"
@@ -20,6 +20,8 @@ if [ -z "$CONTAINER_ID" ]; then
     docker run \
         -it --rm \
         --net "$DOCKER_NETWORK" \
+        --env MODALITY_AUTH_TOKEN \
+        --env MODALITY_REFLECTOR_CONFIG="/reflector-config.toml" \
         --name "$container_name" \
         $CONTAINER_IMAGE \
         bash
