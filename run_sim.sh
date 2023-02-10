@@ -37,7 +37,7 @@ CONTAINER_IMAGE=${1:-bluerov_sim}
 CONTAINER_ID=$(docker ps -aqf "ancestor=${CONTAINER_IMAGE}")
 
 echo "In the console, run this"
-echo "ros2 launch tudelft_hackathon bluerov_ign_sim.launch.py ardusub:=true mavros_url:='bluerov:14551'"
+echo "/launch.sh"
 
 if [ -z "$CONTAINER_ID" ]; then
     container_name="bluerov_sim"

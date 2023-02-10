@@ -28,9 +28,20 @@ RUN echo "#!/bin/bash\ncd /opt/QGroundControl/squashfs-root\n./qgroundcontrol-st
 RUN sudo mv QGroundControl.sh /usr/local/bin/QGroundControl
 RUN sudo chmod +x /usr/local/bin/QGroundControl
 
-COPY ["res/bluerov2_ignition/models/bluerov2_lidar/model.sdf", "/home/docker/tudelft_hackathon_ws/src/bluerov2_ignition/models/bluerov2_lidar/model.sdf"]
+RUN sudo wget --no-verbose --quiet https://get.keygen.sh/auxon-io/auxon.deb -O auxon.deb
+RUN sudo apt-get install -y ./auxon.deb
+RUN sudo apt-get update
+RUN sudo apt-get install -y libignition-gazebo7-dev libgz-cmake3-dev libignition-plugin-dev modality-sdk
 
+RUN mkdir -p /home/docker/tudelft_hackathon_ws/src/modality-gazebo/build
+COPY modality-gazebo/ /home/docker/tudelft_hackathon_ws/src/modality-gazebo/
+RUN cd /home/docker/tudelft_hackathon_ws/src/modality-gazebo/build && cmake .. && make
+
+COPY ["res/bluerov2_ignition/models/bluerov2/model.sdf", "/home/docker/tudelft_hackathon_ws/src/bluerov2_ignition/models/bluerov2/model.sdf"]
+COPY ["res/bluerov2_ignition/models/bluerov2_lidar/model.sdf", "/home/docker/tudelft_hackathon_ws/src/bluerov2_ignition/models/bluerov2_lidar/model.sdf"]
 COPY ["res/remaro_worlds/models/Grey Wall/model.sdf", "/home/docker/tudelft_hackathon_ws/src/remaro_worlds/models/Grey Wall/model.sdf"]
+
+RUN sudo chown -R docker:docker /home/docker/tudelft_hackathon_ws/src
 
 COPY --from=builder /modality_ros_hook/target/debug/libmodality_ros_hook.so /
 COPY docker/sim/launch.sh /
