@@ -21,10 +21,7 @@ ENV MODALITY_SDK_CAPI_OUT_DIR=/modality-sdk/client-libraries/c/target
 RUN cargo build --release && ldconfig -N target/release && python3 setup.py build_ext --inplace
 
 # TODO
-# rust:slim-bookworm builds modality_sdk.cpython-311-x86_64-linux-gnu.so
-# rezenders/ros-hackathon-humble builds modality_sdk.cpython-310-x86_64-linux-gnu.so
-# we need 310 here
-# language level fixes?
+# setup PYTHONPATH to /modality-sdk instead of /usr/lib/python3/dist-packages/modality_sdk/ for now
 FROM rezenders/ros-hackathon-humble
 RUN apt-get update && apt-get install -y vim less
 RUN pip3 install cython
