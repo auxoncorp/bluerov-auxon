@@ -1,18 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <sdf version="1.6">
   <model name="bluerov2">
-    <plugin
-          name='modality_gz::Tracing'
-          filename='ModalityTracingPlugin'>
-          <enabled>true</enabled>
-          <timeline_name>bluerov2</timeline_name>
-          <allow_insecure_tls>true</allow_insecure_tls>
-          <modalityd_url>modality-ingest://172.18.0.1</modalityd_url>
-          <link_name>base_link</link_name>
-          <pose>true</pose>
-          <linear_acceleration>true</linear_acceleration>
-          <linear_velocity>true</linear_velocity>
-      </plugin>
     <pose>0 0 0 0 0 0</pose>
 
     <!-- BlueROV2 thruster reference: http://www.ardusub.com/introduction/features.html -->

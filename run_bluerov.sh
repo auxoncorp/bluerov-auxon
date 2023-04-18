@@ -20,8 +20,6 @@ if [ -z "$CONTAINER_ID" ]; then
     docker run \
         -it --rm \
         --net "$DOCKER_NETWORK" \
-        --env MODALITY_AUTH_TOKEN \
-        --env MODALITY_REFLECTOR_CONFIG="/reflector-config.toml" \
         --name "$container_name" \
         $CONTAINER_IMAGE \
         bash
