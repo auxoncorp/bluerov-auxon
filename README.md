@@ -21,7 +21,13 @@ Based on the work from https://github.com/remaro-network/tudelft_hackathon.
   ```bash
   ./run_bluerov.sh
   ```
-5. Record a ROS 2 bag from either images (or the host):
+5. Record a ROS 2 bag from either container (or the host):
   ```bash
-  ros2 bag record --all --output /tmp/logs
+  ./run_bluerov.sh
+  ```
+  ```bash
+  source "/opt/ros/humble/setup.bash"
+  source "/tudelft_hackathon_ws/install/setup.bash"
+
+  ros2 bag record --all
   ```
