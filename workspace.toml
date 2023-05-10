@@ -1,0 +1,6 @@
+timeline-filters = ["_.execution_context = 'demo'"]
+
+[[segmentation-rule]]
+name = "segment-by-run-id"
+attributes = ["execution_context", "run_id"]
+segment-name-template = "{timeline.execution_context}:{timeline.run_id}"

@@ -8,7 +8,7 @@ from rclpy.node import Node
 
 from sensor_msgs.msg import LaserScan
 from mavros_wrapper.ardusub_wrapper import *
-from modality_sdk import IngestClient, TimelineId, AttrVal, AttrList
+from modality.sdk import IngestClient, TimelineId, AttrVal, AttrList
 
 def laser_scan_cb(msg, ardusub, ic):
     min_distance = 1.5
@@ -24,25 +24,25 @@ def laser_scan_cb(msg, ardusub, ic):
                 yaw=_yaw_speed)
             break
     if allGreater:
-        e_attrs = AttrList(2)
-        v = AttrVal()
-        v.set_string('setting-rc-overrides')
-        e_attrs[0].key = ic.declare_attr_key('event.name')
-        e_attrs[0].value = v
-        v = AttrVal()
+        cb_attrs = AttrList(2)
+        v0 = AttrVal()
+        v0.set_string('setting-rc-overrides')
+        cb_attrs[0].key = ic.declare_attr_key('event.name')
+        cb_attrs[0].value = v0
+        v1 = AttrVal()
         # TODO int types
-        v.set_string(str(forward_speed))
-        e_attrs[1].key = ic.declare_attr_key('event.forward_speed')
-        e_attrs[1].value = v
-        ic.event(e_attrs)
+        v1.set_string(str(forward_speed))
+        cb_attrs[1].key = ic.declare_attr_key('event.forward_speed')
+        cb_attrs[1].value = v1
+        ic.event(cb_attrs)
         ardusub.set_rc_override_channels(forward=forward_speed)
 
 
 if __name__ == '__main__':
     print("Starting wall avoidance. Let's swim!")
 
-    ic = IngestClient(tracing=True)
-    ic.connect(url="modality-ingest://172.18.0.1:14182")
+    ic = IngestClient()
+    ic.connect(url='modality-ingest://172.18.0.1:15182', timeout_seconds=10)
     ic.authenticate()
     t_attrs = AttrList(2)
     tid = TimelineId()

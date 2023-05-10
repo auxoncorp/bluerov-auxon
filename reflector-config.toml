@@ -1,2 +1,17 @@
 [ingest]
-protocol-parent-url = 'modality-ingest://172.18.0.1'
+# modalityd listens on port 14182
+# the local reflector listens on port 15182
+protocol-parent-url = 'modality-ingest://172.18.0.1:14182'
+protocol-child-port = 15182
+additional-timeline-attributes = [
+    "execution_context='demo'",
+    "ci_job='${GITHUB_JOB-local}'",
+    "ci_commit='${GITHUB_SHA-local}'",
+]
+override-timeline-attributes = [
+    "run_id='${MODALITY_RUN_ID-0}'",
+]
+
+[mutation]
+protocol-parent-url = 'modality-mutation://172.18.0.1:14192'
+protocol-child-port = 15192

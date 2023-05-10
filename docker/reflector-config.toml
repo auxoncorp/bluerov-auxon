@@ -1,0 +1,4 @@
+[ingest]
+# modalityd listens on port 14182
+# the local reflector listens on port 15182
+protocol-parent-url = 'modality-ingest://172.18.0.1:15182'
