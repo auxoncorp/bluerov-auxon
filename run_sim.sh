@@ -20,7 +20,7 @@ if [ ! -f "$XAUTH" ]; then
     chmod a+r "$XAUTH"
 fi
 
-DOCKER_OPTS=
+DOCKER_OPTS="${DOCKER_OPTS:-"-it"}"
 DOCKER_VERSION=$(docker version --format '{{.Server.Version}}')
 if dpkg --compare-versions 19.03 gt "$DOCKER_VERSION" ; then
     echo "Docker version is less than 19.03, using nvidia-docker2 runtime"
@@ -33,8 +33,9 @@ else
     DOCKER_OPTS="$DOCKER_OPTS --gpus all"
 fi
 
-CONTAINER_IMAGE=${1:-bluerov_sim}
+CONTAINER_IMAGE="bluerov_sim"
 CONTAINER_ID=$(docker ps -aqf "ancestor=${CONTAINER_IMAGE}")
+CMD=${1:-bash}
 
 echo "In the console, run this"
 echo "/launch.sh"
@@ -42,9 +43,10 @@ echo "/launch.sh"
 if [ -z "$CONTAINER_ID" ]; then
     container_name="bluerov_sim"
     docker run \
-        -it --rm \
+        --rm \
         --net "$DOCKER_NETWORK" \
         --name "$container_name" \
+        --hostname "bluerov_sim" \
         $DOCKER_OPTS \
         --env DISPLAY=$DISPLAY \
         --env XAUTHORITY="$XAUTH" \
@@ -53,7 +55,7 @@ if [ -z "$CONTAINER_ID" ]; then
         --volume=/tmp/.X11-unix:/tmp/.X11-unix:ro \
         --volume="$XAUTH:$XAUTH" \
         $CONTAINER_IMAGE \
-        bash
+        ${CMD}
 else
     docker exec --privileged -e DISPLAY -it $CONTAINER_ID bash
 fi

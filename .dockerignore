@@ -1,0 +1,12 @@
+log.html
+output.xml
+report.html
+stderr.txt
+stdout.txt
+run_bluerov.sh
+build_bluerov.sh
+run_sim.sh
+build_sim.sh
+system.robot
+wait_for_contact.sh
+README.md

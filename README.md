@@ -4,8 +4,9 @@ Based on the work from https://github.com/remaro-network/tudelft_hackathon.
 
 ## Getting Started
 
-1. Setup the workspace
+1. Do initial setup (if needed)
   ```bash
+  modality user create --use demo
   modality workspace create --use demo workspace.toml
   ```
 1. Build the images
@@ -25,7 +26,7 @@ Based on the work from https://github.com/remaro-network/tudelft_hackathon.
   ```
 1. Export your auth token
   ```bash
-  export MODALITY_AUTH_TOKEN="..."
+  export MODALITY_AUTH_TOKEN=$(< ~/.config/modality_cli/.user_auth_token)
   ```
 1. Run the local reflector instance
   ```bash
@@ -33,9 +34,20 @@ Based on the work from https://github.com/remaro-network/tudelft_hackathon.
   ```
 1. Run the simulation container, follow the printed instructions (run `/launch.sh`)
   ```bash
-  ./run_sim.sh 
+  ./run_sim.sh
   ```
 1. Run the BlueROV2 container, follow the printed instructions (run `/launch.sh`)
   ```bash
   ./run_bluerov.sh
   ```
+
+## Running the robot framework tests
+
+```
+sudo apt-get install -y python3-tk
+pip install robotframework
+```
+
+```
+robot system.robot
+```

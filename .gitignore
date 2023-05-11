@@ -1,3 +1,9 @@
 modality-gazebo
 modality-ros2
 modality-sdk
+
+log.html
+output.xml
+report.html
+stderr.txt
+stdout.txt
