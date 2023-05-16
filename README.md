@@ -26,8 +26,8 @@ Based on the work from https://github.com/remaro-network/tudelft_hackathon.
   ./run_bluerov.sh
   ```
   ```bash
-  source "/opt/ros/humble/setup.bash"
-  source "/tudelft_hackathon_ws/install/setup.bash"
+  source /opt/ros/humble/setup.bash
+  source ~/tudelft_hackathon_ws/install/setup.bash
 
   ros2 bag record --all
   ```
