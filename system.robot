@@ -17,6 +17,7 @@ ${MODALITY_AUTH_TOKEN}          %{MODALITY_AUTH_TOKEN}
 *** Keywords ***
 Suite Setup
     Set Environment Variable    MODALITY_AUTH_TOKEN  ${MODALITY_AUTH_TOKEN}
+    Run Process                 modality  config  --modalityd http://localhost:14181/v1/
     Run Process                 modality  workspace  use  demo
     Run Process                 modality  segment  use  --all-segments
     Run Process                 modality  log  ignore  --clear
@@ -53,10 +54,9 @@ Execute the System
 
     Start Modality Reflector
     Start Simulator
-    # TODO rm
-    # waiting for mavros link to be up before starting the controller
+    # TODO setup a keyword to pause until sim transport is up
     #Sleep                       10s
     Pause Execution             Press OK to launch bluerov
     Start Bluerov
-    Pause Execution             Press OK to continue
+    Pause Execution             Press OK to stop the system
     Stop System

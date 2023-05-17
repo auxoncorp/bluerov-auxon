@@ -3,6 +3,7 @@ import sys
 import rclpy
 import random
 import threading
+import time
 
 from rclpy.node import Node
 
@@ -24,16 +25,19 @@ def laser_scan_cb(msg, ardusub, ic):
                 yaw=_yaw_speed)
             break
     if allGreater:
-        cb_attrs = AttrList(2)
+        cb_attrs = AttrList(3)
         v0 = AttrVal()
         v0.set_string('setting-rc-overrides')
         cb_attrs[0].key = ic.declare_attr_key('event.name')
         cb_attrs[0].value = v0
         v1 = AttrVal()
-        # TODO int types
-        v1.set_string(str(forward_speed))
+        v1.set_float(forward_speed)
         cb_attrs[1].key = ic.declare_attr_key('event.forward_speed')
         cb_attrs[1].value = v1
+        v2 = AttrVal()
+        v2.set_timestamp(time.time_ns())
+        cb_attrs[2].key = ic.declare_attr_key('event.timestamp')
+        cb_attrs[2].value = v2
         ic.event(cb_attrs)
         ardusub.set_rc_override_channels(forward=forward_speed)
 
@@ -70,11 +74,15 @@ if __name__ == '__main__':
         service_timer.sleep()
 
     print("ALT HOLD mode selected")
-    e_attrs = AttrList(1)
-    v = AttrVal()
-    v.set_string('alt-hold-selected')
-    e_attrs[0].key = ic.declare_attr_key('event.name')
-    e_attrs[0].value = v
+    e_attrs = AttrList(2)
+    v0 = AttrVal()
+    v0.set_timestamp(time.time_ns())
+    e_attrs[0].key = ic.declare_attr_key('event.timestamp')
+    e_attrs[0].value = v0
+    v1 = AttrVal()
+    v1.set_string('alt-hold-selected')
+    e_attrs[1].key = ic.declare_attr_key('event.name')
+    e_attrs[1].value = v1
     ic.event(e_attrs)
 
     while ardusub.status.armed == False:
@@ -82,11 +90,15 @@ if __name__ == '__main__':
         service_timer.sleep()
 
     print("Thrusters armed")
-    e_attrs = AttrList(1)
-    v = AttrVal()
-    v.set_string('thrusters-armed')
-    e_attrs[0].key = ic.declare_attr_key('event.name')
-    e_attrs[0].value = v
+    e_attrs = AttrList(2)
+    v0 = AttrVal()
+    v0.set_timestamp(time.time_ns())
+    e_attrs[0].key = ic.declare_attr_key('event.timestamp')
+    e_attrs[0].value = v0
+    v1 = AttrVal()
+    v1.set_string('thrusters-armed')
+    e_attrs[1].key = ic.declare_attr_key('event.name')
+    e_attrs[1].value = v1
     ic.event(e_attrs)
 
     print("Initializing mission")
