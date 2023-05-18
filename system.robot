@@ -1,36 +1,70 @@
+# git clone --depth 1 https://github.com/auxoncorp/modality-sdk.git --branch more-python repo
+# install to /opt/modality-sdk
+# run with:
+# LD_LIBRARY_PATH=/opt/modality-sdk/lib/ PYTHONPATH=/opt/modality-sdk/python robot system.robot
+
 *** Settings ***
 Library  OperatingSystem
 Library  Process
 Library  Dialogs
+Library  ModalityLibrary.py
 
 Suite Setup     Suite Setup
+Suite Teardown  Suite Teardown
 Test Setup      Test Setup
 Test Teardown   Test Teardown
 
 Documentation
-...    Execute the bluerov system
+...  Execute the bluerov system
 
 *** Variables ***
-${GZ_PARTITION}                 "bluerov_sim:docker"
 ${MODALITY_AUTH_TOKEN}          %{MODALITY_AUTH_TOKEN}
+${LOCAL_SDK_PATH}               /opt/modality-sdk
 
 *** Keywords ***
 Suite Setup
-    Set Environment Variable    MODALITY_AUTH_TOKEN  ${MODALITY_AUTH_TOKEN}
     Run Process                 modality  config  --modalityd http://localhost:14181/v1/
     Run Process                 modality  workspace  use  demo
     Run Process                 modality  segment  use  --all-segments
     Run Process                 modality  log  ignore  --clear
 
+    Start Modality Reflector
+    Connect To Modality         ${MODALITY_AUTH_TOKEN}
+    Open Suite Timeline         ${SUITE_NAME}
+    Log Suite Setup             ${SUITE_NAME}
+
+Suite Teardown
+    Log Suite Teardown          ${SUITE_NAME}
+    Close Suite Timeline
+    Wait For Suite Teardown Event
+    Terminate All Processes
+
 Test Setup
-    # TODO
-    Set Environment Variable    MODALITY_AUTH_TOKEN  ${MODALITY_AUTH_TOKEN}
+    Log Test Setup              ${TEST_NAME}
 
 Test Teardown
-    Terminate All Processes
+    Run Keyword If Test Failed
+      ...   Log Test Failure    ${TEST_NAME}
+    Log Test Teardown           ${TEST_NAME}
+
+Wait For Suite Teardown Event
+    Log                         Waiting for suite teardown event to be received  console=false
+    ${e_at_t}=                  Set Variable  teardown_suite @ robot_framework
+    ${pred}=                    Set Variable  _.robot_framework.suite.name = '${SUITE_NAME}'
+    ${agg}=                     Set Variable  AGGREGATE count() = 1
+    ${result}=                  Run Process  modality  wait-until  --deadline\=25s  --whole-workspace  ${e_at_t} (${pred}) ${agg}
+    Should Be Equal 	        ${result.rc}  ${0}
+
+Wait For Gazebo Model
+    Log                         Waiting for the bluerov2 Gazebo model to be up  console=false
+    ${e_at_t}=                  Set Variable  pose@bluerov2
+    ${agg}=                     Set Variable  AGGREGATE count() > 0
+    ${result}=                  Run Process  modality  wait-until  --deadline\=15s  --whole-workspace  ${e_at_t} ${agg}
+    Should Be Equal 	        ${result.rc}  ${0}
 
 Start Modality Reflector
     Start Process               modality-reflector  run  --config  reflector-config.toml  alias=reflector
+    Sleep                       2
 
 Start Simulator
     Set Environment Variable    DOCKER_OPTS  -d\=true
@@ -45,18 +79,14 @@ Start Bluerov
 Stop System
     Run Process                 docker  stop  bluerov
     Run Process                 docker  stop  bluerov_sim
-    Terminate All Processes
 
 *** Test Cases ***
-Execute the System
-    [Documentation]             Executes the system
-    [Tags]                      test  bluerov  gazebo
+Avoid Walls
+    [Documentation]             Run the random wall avoidance algorithm
+    [Tags]                      ros  bluerov  gazebo
 
-    Start Modality Reflector
     Start Simulator
-    # TODO setup a keyword to pause until sim transport is up
-    #Sleep                       10s
-    Pause Execution             Press OK to launch bluerov
+    Wait For Gazebo Model
     Start Bluerov
     Pause Execution             Press OK to stop the system
     Stop System

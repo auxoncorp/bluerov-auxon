@@ -10,3 +10,4 @@ build_sim.sh
 system.robot
 wait_for_contact.sh
 README.md
+__pycache__

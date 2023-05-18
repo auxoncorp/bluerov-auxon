@@ -7,3 +7,5 @@ output.xml
 report.html
 stderr.txt
 stdout.txt
+
+__pycache__
