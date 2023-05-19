@@ -30,7 +30,7 @@ def laser_scan_cb(msg, ardusub, ic):
 
     cb_attrs = AttrList(4)
     v0 = AttrVal()
-    v0.set_string('setting-rc-overrides')
+    v0.set_string('setting_rc_overrides')
     cb_attrs[0].key = ic.declare_attr_key('event.name')
     cb_attrs[0].value = v0
     v1 = AttrVal()
@@ -66,7 +66,7 @@ if __name__ == '__main__':
     t_attrs[0].key = ic.declare_attr_key('timeline.id')
     t_attrs[0].value = v
     v = AttrVal()
-    v.set_string('wall-avoidance-test')
+    v.set_string('wall_avoidance_test')
     t_attrs[1].key = ic.declare_attr_key('timeline.name')
     t_attrs[1].value = v
     ic.open_timeline(tid, t_attrs)
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     e_attrs[0].key = ic.declare_attr_key('event.timestamp')
     e_attrs[0].value = v0
     v1 = AttrVal()
-    v1.set_string('alt-hold-selected')
+    v1.set_string('alt_hold_selected')
     e_attrs[1].key = ic.declare_attr_key('event.name')
     e_attrs[1].value = v1
     ic.event(e_attrs)
@@ -107,7 +107,7 @@ if __name__ == '__main__':
     e_attrs[0].key = ic.declare_attr_key('event.timestamp')
     e_attrs[0].value = v0
     v1 = AttrVal()
-    v1.set_string('thrusters-armed')
+    v1.set_string('thrusters_armed')
     e_attrs[1].key = ic.declare_attr_key('event.name')
     e_attrs[1].value = v1
     ic.event(e_attrs)
