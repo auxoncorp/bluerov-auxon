@@ -1,4 +1,6 @@
 import uuid
+from pathlib import Path
+import os
 import time
 from modality.sdk import IngestClient, TimelineId, AttrVal, AttrList
 
@@ -11,6 +13,18 @@ class ModalityLibrary(object):
 
     def __init__(self):
         self.ic = IngestClient()
+
+    def setup_run_id_cache_file(self, path):
+        if not os.path.exists(path):
+            with open(path, 'w+') as f:
+                f.write('0')
+            return '0'
+        else:
+            run_id = int(Path(path).read_text().replace('\n', ''))
+            next_run_id = str(run_id + 1)
+            with open(path, 'w+') as f:
+                f.write(next_run_id)
+            return next_run_id
 
     def connect_to_modality(self, auth_token):
         self.ic.connect(url='modality-ingest://172.18.0.1:15182', timeout_seconds=10)
@@ -25,6 +39,7 @@ class ModalityLibrary(object):
         t_attrs[0].key = self.ic.declare_attr_key('timeline.id')
         t_attrs[0].value = a
 
+        # Provide a default run_id, overridden by MODALITY_RUN_ID
         self.run_id = uuid.uuid4()
         b = AttrVal()
         b.set_string(str(self.run_id))

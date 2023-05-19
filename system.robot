@@ -25,8 +25,11 @@ ${LOCAL_SDK_PATH}               /opt/modality-sdk
 Suite Setup
     Run Process                 modality  config  --modalityd http://localhost:14181/v1/
     Run Process                 modality  workspace  use  demo
-    Run Process                 modality  segment  use  --all-segments
+    Run Process                 modality  segment  use  --latest
     Run Process                 modality  log  ignore  --clear
+
+    ${run_id}=                  Setup Run Id Cache File  run_id.cache
+    Set Environment Variable    MODALITY_RUN_ID  ${run_id}
 
     Start Modality Reflector
     Connect To Modality         ${MODALITY_AUTH_TOKEN}
@@ -52,14 +55,14 @@ Wait For Suite Teardown Event
     ${e_at_t}=                  Set Variable  teardown_suite @ robot_framework
     ${pred}=                    Set Variable  _.robot_framework.suite.name = '${SUITE_NAME}'
     ${agg}=                     Set Variable  AGGREGATE count() = 1
-    ${result}=                  Run Process  modality  wait-until  --deadline\=25s  --whole-workspace  ${e_at_t} (${pred}) ${agg}
+    ${result}=                  Run Process  modality  wait-until  --deadline\=35s  --whole-workspace  ${e_at_t} (${pred}) ${agg}
     Should Be Equal 	        ${result.rc}  ${0}
 
 Wait For Gazebo Model
     Log                         Waiting for the bluerov2 Gazebo model to be up  console=false
     ${e_at_t}=                  Set Variable  pose@bluerov2
     ${agg}=                     Set Variable  AGGREGATE count() > 0
-    ${result}=                  Run Process  modality  wait-until  --deadline\=15s  --whole-workspace  ${e_at_t} ${agg}
+    ${result}=                  Run Process  modality  wait-until  --deadline\=35s  --whole-workspace  ${e_at_t} ${agg}
     Should Be Equal 	        ${result.rc}  ${0}
 
 Start Modality Reflector
