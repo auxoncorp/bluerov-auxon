@@ -12,34 +12,45 @@ from mavros_wrapper.ardusub_wrapper import *
 from modality.sdk import IngestClient, TimelineId, AttrVal, AttrList
 
 def laser_scan_cb(msg, ardusub, ic):
+    now = time.time_ns()
     min_distance = 1.5
     yaw_speed = 0.3
     forward_speed = 0.15
     allGreater = True
+
+    lin_vel_x = forward_speed
+    ang_vel_z = 0.0
+
     for scan in msg.ranges:
         if scan < min_distance:
             allGreater = False
-            _yaw_speed = (-1)**random.choice([1, 2])*yaw_speed
-            ardusub.set_rc_override_channels(
-                forward=-forward_speed/4,
-                yaw=_yaw_speed)
+            ang_vel_z = (-1)**random.choice([1, 2])*yaw_speed
+            lin_vel_x = -forward_speed/4
             break
+
+    cb_attrs = AttrList(4)
+    v0 = AttrVal()
+    v0.set_string('setting-rc-overrides')
+    cb_attrs[0].key = ic.declare_attr_key('event.name')
+    cb_attrs[0].value = v0
+    v1 = AttrVal()
+    v1.set_timestamp(now)
+    cb_attrs[1].key = ic.declare_attr_key('event.timestamp')
+    cb_attrs[1].value = v1
+    v2 = AttrVal()
+    v2.set_float(lin_vel_x)
+    cb_attrs[2].key = ic.declare_attr_key('event.linear_velocity.x')
+    cb_attrs[2].value = v2
+    v3 = AttrVal()
+    v3.set_float(ang_vel_z)
+    cb_attrs[3].key = ic.declare_attr_key('event.angular_velocity.z')
+    cb_attrs[3].value = v3
+    ic.event(cb_attrs)
+
     if allGreater:
-        cb_attrs = AttrList(3)
-        v0 = AttrVal()
-        v0.set_string('setting-rc-overrides')
-        cb_attrs[0].key = ic.declare_attr_key('event.name')
-        cb_attrs[0].value = v0
-        v1 = AttrVal()
-        v1.set_float(forward_speed)
-        cb_attrs[1].key = ic.declare_attr_key('event.forward_speed')
-        cb_attrs[1].value = v1
-        v2 = AttrVal()
-        v2.set_timestamp(time.time_ns())
-        cb_attrs[2].key = ic.declare_attr_key('event.timestamp')
-        cb_attrs[2].value = v2
-        ic.event(cb_attrs)
-        ardusub.set_rc_override_channels(forward=forward_speed)
+        ardusub.set_rc_override_channels(forward=lin_vel_x)
+    else:
+        ardusub.set_rc_override_channels(forward=lin_vel_x, yaw=ang_vel_z)
 
 
 if __name__ == '__main__':

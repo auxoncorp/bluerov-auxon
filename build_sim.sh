@@ -4,7 +4,7 @@ set -euo pipefail
 
 # TODO use https and main branch once public
 if [ ! -d modality-ros2 ]; then
-    git clone --depth 1 git@github.com:auxoncorp/modality-ros2.git --branch humble
+    git clone --depth 1 git@github.com:auxoncorp/modality-ros2.git
 fi
 
 # TODO use https and main branch once public
