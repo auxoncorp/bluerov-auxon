@@ -1,7 +1,8 @@
 # git clone --depth 1 https://github.com/auxoncorp/modality-sdk.git --branch more-python repo
 # install to /opt/modality-sdk
 # run with:
-# LD_LIBRARY_PATH=/opt/modality-sdk/lib/ PYTHONPATH=/opt/modality-sdk/python robot system.robot
+# LD_LIBRARY_PATH=/opt/modality-sdk/lib PYTHONPATH=/opt/modality-sdk/python robot system.robot
+# NOTE: this conflicts with the python module installed by modality-sdk, needs to be removed first for now
 
 *** Settings ***
 Library  OperatingSystem
@@ -19,11 +20,13 @@ Documentation
 
 *** Variables ***
 ${MODALITY_AUTH_TOKEN}          %{MODALITY_AUTH_TOKEN}
+${MODALITYD_API_URL}            http://localhost:14181/v1/
+${REFLECTOR_URL}                modality-ingest://172.18.0.1:15182
 ${LOCAL_SDK_PATH}               /opt/modality-sdk
 
 *** Keywords ***
 Suite Setup
-    Run Process                 modality  config  --modalityd http://localhost:14181/v1/
+    Run Process                 modality  config  --modalityd ${MODALITYD_API_URL}
     Run Process                 modality  workspace  use  demo
     Run Process                 modality  segment  use  --latest
     Run Process                 modality  log  ignore  --clear
@@ -32,7 +35,7 @@ Suite Setup
     Set Environment Variable    MODALITY_RUN_ID  ${run_id}
 
     Start Modality Reflector
-    Connect To Modality         ${MODALITY_AUTH_TOKEN}
+    Connect To Modality         ${REFLECTOR_URL}  ${MODALITY_AUTH_TOKEN}
     Open Suite Timeline         ${SUITE_NAME}
     Log Suite Setup             ${SUITE_NAME}
 

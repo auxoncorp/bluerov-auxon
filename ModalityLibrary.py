@@ -26,8 +26,8 @@ class ModalityLibrary(object):
                 f.write(next_run_id)
             return next_run_id
 
-    def connect_to_modality(self, auth_token):
-        self.ic.connect(url='modality-ingest://172.18.0.1:15182', timeout_seconds=10)
+    def connect_to_modality(self, url, auth_token):
+        self.ic.connect(url=url, timeout_seconds=10)
         self.ic.authenticate(auth_token=auth_token)
 
     def open_suite_timeline(self, suite_name):

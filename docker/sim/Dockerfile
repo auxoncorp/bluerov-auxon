@@ -1,26 +1,10 @@
-FROM rust:slim-bookworm as builder
-RUN cargo install cargo-chef
-RUN apt-get update && apt-get install -y pkg-config libssl-dev
-# TODO fix the chef recipe build
-#RUN mkdir modality_ros_hook
-#WORKDIR /modality_ros_hook/
-#COPY /modality-ros2/modality_ros_hook/Cargo.toml .
-#COPY /modality-ros2/modality_ros_hook/Cargo.lock .
-#RUN cargo chef prepare --recipe-path recipe.json
-#RUN cargo chef cook --release --recipe-path recipe.json
-#RUN cargo chef cook --recipe-path recipe.json
-#COPY modality-ros2/modality_ros_hook/ .
-#RUN cargo build
-RUN mkdir modality-ros2
-WORKDIR /modality-ros2
-COPY modality-ros2/ .
-WORKDIR /modality-ros2/modality_ros_hook
-RUN cargo build --release
-
 FROM rezenders/ignition:hackathon-nvidia-humble
 
 RUN sudo apt-get update
 RUN sudo apt-get install -y gstreamer1.0-plugins-bad gstreamer1.0-libav gstreamer1.0-gl libqt5gui5 libfuse2 vim
+
+RUN sudo wget -q -O /libmodality_ros_hook.so \
+    https://github.com/auxoncorp/modality-ros2/releases/latest/download/libmodality_ros_hook_22.04_amd64.so
 
 RUN sudo wget -q -O /opt/QGroundControl.AppImage https://s3.amazonaws.com/downloads.bluerobotics.com/QGC/latest/QGroundControl.AppImage
 RUN sudo chmod +x /opt/QGroundControl.AppImage
@@ -39,8 +23,8 @@ RUN sudo apt-get install -y ./auxon.deb
 RUN sudo apt-get update
 RUN sudo apt-get install -y libignition-gazebo7-dev libgz-cmake3-dev libignition-plugin-dev modality-sdk
 
+RUN git clone --depth 1 https://github.com/auxoncorp/modality-gazebo.git /home/docker/tudelft_hackathon_ws/src/modality-gazebo
 RUN mkdir -p /home/docker/tudelft_hackathon_ws/src/modality-gazebo/build
-COPY modality-gazebo/ /home/docker/tudelft_hackathon_ws/src/modality-gazebo/
 RUN cd /home/docker/tudelft_hackathon_ws/src/modality-gazebo/build && cmake .. && make
 
 COPY ["res/bluerov2_ignition/models/bluerov2/model.sdf", "/home/docker/tudelft_hackathon_ws/src/bluerov2_ignition/models/bluerov2/model.sdf"]
@@ -49,6 +33,5 @@ COPY ["res/remaro_worlds/models/Grey Wall/model.sdf", "/home/docker/tudelft_hack
 
 RUN sudo chown -R docker:docker /home/docker/tudelft_hackathon_ws/src
 
-COPY --from=builder /modality-ros2/modality_ros_hook/target/release/libmodality_ros_hook.so /
 COPY docker/sim/launch.sh /
 COPY docker/reflector-config.toml /
